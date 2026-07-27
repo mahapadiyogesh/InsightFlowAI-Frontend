@@ -1,12 +1,31 @@
 import { useContext, useRef } from "react";
 import * as XLSX from "xlsx";
 import { UploadCloud } from "lucide-react";
+
 import { DataContext } from "../context/DataContext";
-import { generateKPIs } from "../utils/generateKPIs";
+
+import { dashboardGenerator } from "../utils/dashboardGenerator";
+import { generateInsights } from "../utils/generateInsights";
+
 function UploadSection() {
   const inputRef = useRef();
 
-  const { setExcelData, setKpis } = useContext(DataContext);
+  const {
+    setExcelData,
+    setFilteredData,
+
+    setAnalysis,
+
+    setDashboard,
+
+    setFilters,
+
+    setKpis,
+
+    setCharts,
+
+    setInsights,
+  } = useContext(DataContext);
 
   const handleUpload = (e) => {
     const file = e.target.files[0];
@@ -18,19 +37,51 @@ function UploadSection() {
     reader.onload = (event) => {
       const data = new Uint8Array(event.target.result);
 
-      const workbook = XLSX.read(data, { type: "array" });
+      const workbook = XLSX.read(data, {
+        type: "array",
+      });
 
-      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      const sheet =
+        workbook.Sheets[
+          workbook.SheetNames[0]
+        ];
 
-      const json = XLSX.utils.sheet_to_json(sheet);
+      const json =
+        XLSX.utils.sheet_to_json(sheet);
 
-setExcelData(json);
+      // Store Dataset
 
-// Generate KPI
-const kpiData = generateKPIs(json);
-setKpis(kpiData);
+      setExcelData(json);
 
-alert(`Successfully Loaded ${json.length} Records`);
+      setFilteredData(json);
+
+      // AI Dashboard Generation
+
+      const dashboard =
+        dashboardGenerator(json);
+
+      setDashboard(dashboard);
+
+      setAnalysis(dashboard.analysis);
+
+      setFilters(dashboard.filters);
+
+      setKpis(dashboard.kpis);
+
+      setCharts(dashboard.charts);
+
+      const aiInsights =
+        generateInsights(
+          json,
+          dashboard.analysis,
+          dashboard.kpis
+        );
+
+      setInsights(aiInsights);
+
+      alert(
+        `AI successfully analysed ${json.length} records`
+      );
     };
 
     reader.readAsArrayBuffer(file);
@@ -40,7 +91,7 @@ alert(`Successfully Loaded ${json.length} Records`);
     <div className="bg-white rounded-2xl shadow-lg p-8">
 
       <h2 className="text-2xl font-bold mb-6">
-        Upload Excel File
+        Upload Dataset
       </h2>
 
       <div
@@ -53,11 +104,11 @@ alert(`Successfully Loaded ${json.length} Records`);
         />
 
         <h3 className="mt-5 text-xl font-semibold">
-          Click to Upload Excel / CSV
+          Click to Upload
         </h3>
 
         <p className="text-gray-500 mt-2">
-          Supports .xlsx, .xls and .csv
+          Excel (.xlsx .xls) / CSV
         </p>
 
         <input
@@ -68,6 +119,7 @@ alert(`Successfully Loaded ${json.length} Records`);
           onChange={handleUpload}
         />
       </div>
+
     </div>
   );
 }
