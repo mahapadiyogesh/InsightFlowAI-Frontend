@@ -1,93 +1,97 @@
-export function detectColumnType(columnName) {
-  const name = columnName.toLowerCase().trim();
-
-  const rules = {
-    revenue: [
-      "revenue",
-      "sales",
-      "amount",
-      "income",
-      "net sales",
-      "gross sales",
-      "turnover",
-      "value",
-    ],
-
-    profit: [
-      "profit",
-      "margin",
-      "earnings",
-      "net profit",
-    ],
-
-    customer: [
-      "customer",
-      "client",
-      "buyer",
-      "consumer",
-      "customer name",
-    ],
-
-    product: [
-      "product",
-      "item",
-      "product name",
-      "sku",
-    ],
-
-    category: [
-      "category",
-      "segment",
-      "department",
-      "type",
-    ],
-
-    date: [
-      "date",
-      "order date",
-      "invoice date",
-      "purchase date",
-      "created date",
-    ],
-
-    state: [
-      "state",
-      "province",
-      "region",
-    ],
-
-    city: [
-      "city",
-      "town",
-      "location",
-    ],
-
-    country: [
-      "country",
-      "nation",
-    ],
-
-    quantity: [
-      "quantity",
-      "qty",
-      "units",
-      "volume",
-    ],
-
-    payment: [
-      "payment",
-      "payment mode",
-      "payment method",
-    ],
-  };
-
-  for (const [type, keywords] of Object.entries(rules)) {
-    if (
-      keywords.some((keyword) => name.includes(keyword))
-    ) {
-      return type;
-    }
+export function detectColumnType(columnName, values) {
+  if (!Array.isArray(values) || values.length === 0) {
+    return "unknown";
   }
 
-  return "unknown";
+  const cleaned = values.filter(
+    (v) =>
+      v !== null &&
+      v !== undefined &&
+      String(v).trim() !== ""
+  );
+
+  if (cleaned.length === 0) {
+    return "unknown";
+  }
+
+  const name = columnName.toLowerCase();
+
+  const dateKeywords = [
+    "date",
+    "dob",
+    "birth",
+    "joining",
+    "invoice",
+    "order",
+    "ship",
+    "delivery",
+    "created",
+    "updated",
+  ];
+
+  const isDateColumn = dateKeywords.some((k) =>
+    name.includes(k)
+  );
+
+  let number = 0;
+  let text = 0;
+  let date = 0;
+  let boolean = 0;
+
+  cleaned.forEach((value) => {
+    if (
+      typeof value === "boolean" ||
+      String(value).toLowerCase() === "true" ||
+      String(value).toLowerCase() === "false"
+    ) {
+      boolean++;
+      return;
+    }
+
+    if (value instanceof Date) {
+      date++;
+      return;
+    }
+
+    if (
+      isDateColumn &&
+      typeof value === "number" &&
+      value > 25000 &&
+      value < 60000
+    ) {
+      date++;
+      return;
+    }
+
+    if (
+      isDateColumn &&
+      !isNaN(Date.parse(value))
+    ) {
+      date++;
+      return;
+    }
+
+    if (!isNaN(Number(value))) {
+      number++;
+      return;
+    }
+
+    text++;
+  });
+
+  const total = cleaned.length;
+
+  if (date / total > 0.7) return "date";
+
+  if (number / total > 0.7) return "number";
+
+  if (boolean / total > 0.7) return "boolean";
+
+  const unique = [...new Set(cleaned)];
+
+  if (unique.length <= 30) {
+    return "category";
+  }
+
+  return "text";
 }

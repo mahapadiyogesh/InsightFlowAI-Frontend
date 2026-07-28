@@ -1,92 +1,53 @@
 export function generateCharts(data, analysis) {
-  if (!data || data.length === 0 || !analysis) {
-    return [];
-  }
+  if (!analysis) return [];
 
   const charts = [];
 
-  const {
-    numericColumns,
-    textColumns,
-    dateColumns,
-  } = analysis;
+  const numericColumns = analysis.numericColumns ?? [];
+  const categoryColumns = analysis.categoryColumns ?? [];
+  const dateColumns = analysis.dateColumns ?? [];
 
-  // -------------------------
-  // Line Chart
-  // -------------------------
-  if (
-    dateColumns.length > 0 &&
-    numericColumns.length > 0
-  ) {
+  // KPI
+  numericColumns.forEach((col) => {
     charts.push({
-      id: "line-chart",
-      type: "line",
-      title: `${numericColumns[0]} Trend`,
-      xAxis: dateColumns[0],
-      yAxis: numericColumns[0],
+      chart: "kpi",
+      title: col,
+      value: col,
     });
-  }
+  });
 
-  // -------------------------
-  // Bar Chart
-  // -------------------------
-  if (
-    textColumns.length > 0 &&
-    numericColumns.length > 0
-  ) {
-    charts.push({
-      id: "bar-chart",
-      type: "bar",
-      title: `${numericColumns[0]} by ${textColumns[0]}`,
-      xAxis: textColumns[0],
-      yAxis: numericColumns[0],
+  // Bar
+  categoryColumns.forEach((cat) => {
+    numericColumns.forEach((num) => {
+      charts.push({
+        chart: "bar",
+        title: `${num} by ${cat}`,
+        xAxis: cat,
+        yAxis: num,
+      });
     });
-  }
+  });
 
-  // -------------------------
-  // Pie Chart
-  // -------------------------
-  if (
-    textColumns.length > 0 &&
-    numericColumns.length > 0
-  ) {
+  // Pie
+  categoryColumns.forEach((cat) => {
     charts.push({
-      id: "pie-chart",
-      type: "pie",
-      title: `${numericColumns[0]} Distribution`,
-      nameKey: textColumns[0],
-      valueKey: numericColumns[0],
+      chart: "pie",
+      title: `${cat} Distribution`,
+      category: cat,
     });
-  }
+  });
 
-  // -------------------------
-  // Scatter Chart
-  // -------------------------
-  if (numericColumns.length >= 2) {
-    charts.push({
-      id: "scatter-chart",
-      type: "scatter",
-      title: `${numericColumns[0]} vs ${numericColumns[1]}`,
-      xAxis: numericColumns[0],
-      yAxis: numericColumns[1],
+  // Line
+  dateColumns.forEach((date) => {
+    numericColumns.forEach((num) => {
+      charts.push({
+        chart: "line",
+        title: `${num} Trend`,
+        xAxis: date,
+        yAxis: num,
+      });
     });
-  }
-
-  // -------------------------
-  // Area Chart
-  // -------------------------
-  if (
-    dateColumns.length > 0 &&
-    numericColumns.length > 0
-  ) {
-    charts.push({
-      id: "area-chart",
-      type: "area",
-      title: `${numericColumns[0]} Over Time`,
-      xAxis: dateColumns[0],
-      yAxis: numericColumns[0],
-    });
-  }
+  });
 
   return charts;
 }

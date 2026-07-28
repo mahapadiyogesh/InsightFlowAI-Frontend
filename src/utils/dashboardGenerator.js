@@ -5,51 +5,91 @@ import { generateCharts } from "./generateCharts";
 import { rankCharts } from "./rankCharts";
 
 export function dashboardGenerator(data) {
-  if (!data || data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return null;
   }
 
-  // Step 1
-  const analysis = analyzeDataset(data);
+  try {
+    // ==========================
+    // DATASET ANALYSIS
+    // ==========================
+    const analysis = analyzeDataset(data);
 
-  // Step 2
-  const kpis = generateKPIs(data);
+    console.log("===== ANALYSIS =====");
+    console.log(analysis);
 
-  // Step 3
-  const filters = generateFilters(data, analysis);
+    if (!analysis) {
+      throw new Error("Analysis generation failed.");
+    }
 
-  // Step 4
-  const charts = generateCharts(data, analysis);
+    // ==========================
+    // KPIs
+    // ==========================
+    const kpis = generateKPIs(data);
 
-  // Step 5
-  const rankedCharts = rankCharts(charts, analysis);
+    console.log("===== KPIS =====");
+    console.log(kpis);
 
-  return {
-    dataset: {
-      rows: analysis.totalRows,
-      columns: analysis.totalColumns,
-    },
+    // ==========================
+    // FILTERS
+    // ==========================
+    const filters = generateFilters(data, analysis);
 
-    analysis,
+    console.log("===== FILTERS =====");
+    console.log(filters);
 
-    kpis,
+    // ==========================
+    // CHARTS
+    // ==========================
+    const charts = generateCharts(data, analysis);
 
-    filters,
+    console.log("===== CHARTS =====");
+    console.log(charts);
 
-    charts: rankedCharts,
+    // ==========================
+    // RANK CHARTS
+    // ==========================
+    const rankedCharts = rankCharts(charts, analysis);
 
-    layout: {
-      header: true,
+    console.log("===== RANKED CHARTS =====");
+    console.log(rankedCharts);
 
-      kpis: true,
+    return {
+      dataset: {
+        rows: analysis.totalRows,
+        columns: analysis.totalColumns,
+      },
 
-      filters: true,
+      analysis,
 
-      charts: true,
+      kpis,
 
-      insights: true,
+      filters,
 
-      table: true,
-    },
-  };
+      charts: rankedCharts,
+
+      layout: {
+        header: true,
+        kpis: true,
+        filters: true,
+        charts: true,
+        insights: true,
+        table: true,
+      },
+    };
+  } catch (error) {
+    console.error("Dashboard Generator Error:", error);
+
+    return {
+      dataset: {
+        rows: 0,
+        columns: 0,
+      },
+      analysis: null,
+      kpis: {},
+      filters: [],
+      charts: [],
+      layout: {},
+    };
+  }
 }

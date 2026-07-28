@@ -1,62 +1,45 @@
 export function rankCharts(charts, analysis) {
-  if (!charts || charts.length === 0) {
+  if (!Array.isArray(charts) || charts.length === 0) {
     return [];
   }
 
-  const rankedCharts = charts.map((chart) => {
-    let score = 0;
+  return charts
+    .map((item) => {
+      let score = 0;
 
-    switch (chart.type) {
-      case "line":
-        score =
-          analysis.dateColumns.length > 0 &&
-          analysis.numericColumns.length > 0
-            ? 100
-            : 0;
-        break;
+      switch (item.chart) {
+        case "kpi":
+          score = 100;
+          break;
 
-      case "bar":
-        score =
-          analysis.textColumns.length > 0 &&
-          analysis.numericColumns.length > 0
-            ? 95
-            : 0;
-        break;
+        case "bar":
+          score = 95;
+          break;
 
-      case "pie":
-        score =
-          analysis.textColumns.length > 0 &&
-          analysis.numericColumns.length > 0
-            ? 85
-            : 0;
-        break;
+        case "line":
+          score = 90;
+          break;
 
-      case "area":
-        score =
-          analysis.dateColumns.length > 0 &&
-          analysis.numericColumns.length > 0
-            ? 80
-            : 0;
-        break;
+        case "pie":
+          score = 85;
+          break;
 
-      case "scatter":
-        score =
-          analysis.numericColumns.length >= 2
-            ? 75
-            : 0;
-        break;
+        case "area":
+          score = 80;
+          break;
 
-      default:
-        score = 50;
-    }
+        case "table":
+          score = 10;
+          break;
 
-    return {
-      ...chart,
-      score,
-    };
-  });
+        default:
+          score = 0;
+      }
 
-  rankedCharts.sort((a, b) => b.score - a.score);
-
-  return rankedCharts.slice(0, 6);
+      return {
+        ...item,
+        score,
+      };
+    })
+    .sort((a, b) => b.score - a.score);
 }

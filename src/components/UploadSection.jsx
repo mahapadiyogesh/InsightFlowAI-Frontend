@@ -55,20 +55,23 @@ function UploadSection() {
 
       setFilteredData(json);
 
-      // AI Dashboard Generation
+  // AI Dashboard Generation
 
-      const dashboard =
-        dashboardGenerator(json);
+const dashboard =
+  dashboardGenerator(json);
 
-      setDashboard(dashboard);
+console.log("ANALYSIS", dashboard.analysis);
+console.log("FILTERS", dashboard.filters);
 
-      setAnalysis(dashboard.analysis);
+setDashboard(dashboard);
 
-      setFilters(dashboard.filters);
+setAnalysis(dashboard.analysis);
 
-      setKpis(dashboard.kpis);
+setFilters(dashboard.filters);
 
-      setCharts(dashboard.charts);
+setKpis(dashboard.kpis);
+
+setCharts(dashboard.charts);
 
       const aiInsights =
         generateInsights(

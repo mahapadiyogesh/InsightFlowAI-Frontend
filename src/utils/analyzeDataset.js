@@ -1,7 +1,7 @@
 import { detectColumnType } from "./detectColumnType";
 
 export function analyzeDataset(data) {
-  if (!data || data.length === 0) {
+  if (!Array.isArray(data) || data.length === 0) {
     return null;
   }
 
@@ -15,46 +15,99 @@ export function analyzeDataset(data) {
 
     numericColumns: [],
     textColumns: [],
+    categoryColumns: [],
     dateColumns: [],
+    booleanColumns: [],
 
     detected: {},
   };
 
   columns.forEach((column) => {
-    const type = detectColumnType(column);
+    // Get all values from this column
+    const values = data.map((row) => row[column]);
 
-    const sampleValue = data.find(
-      (row) =>
-        row[column] !== undefined &&
-        row[column] !== null &&
-        row[column] !== ""
-    )?.[column];
+    // Detect column type
+    const type = detectColumnType(column, values);
 
-    const isNumeric =
-      typeof sampleValue === "number" ||
-      (!isNaN(Number(sampleValue)) &&
-        sampleValue !== "");
+    // Remove empty values
+    const cleaned = values.filter(
+      (value) =>
+        value !== undefined &&
+        value !== null &&
+        String(value).trim() !== ""
+    );
+
+    // Sample value
+    const sample = cleaned.length > 0 ? cleaned[0] : null;
+
+    // Missing values
+    const missingValues = values.length - cleaned.length;
+
+    // Unique values
+    const uniqueValues = [...new Set(cleaned)];
+
+    // Numeric statistics
+    let min = null;
+    let max = null;
+    let average = null;
+
+    if (type === "number") {
+      const numbers = cleaned
+        .map(Number)
+        .filter((n) => !isNaN(n));
+
+      if (numbers.length > 0) {
+        min = Math.min(...numbers);
+        max = Math.max(...numbers);
+
+        average =
+          numbers.reduce((sum, n) => sum + n, 0) /
+          numbers.length;
+      }
+    }
 
     analysis.columns.push({
       name: column,
-      detectedType: type,
-      sample: sampleValue,
-      numeric: isNumeric,
+      type,
+      sample,
+      totalValues: values.length,
+      missingValues,
+      uniqueValues: uniqueValues.length,
+      min,
+      max,
+      average,
     });
 
-    if (isNumeric) {
-      analysis.numericColumns.push(column);
-    } else {
-      analysis.textColumns.push(column);
+    switch (type) {
+      case "number":
+        analysis.numericColumns.push(column);
+        break;
+
+      case "text":
+        analysis.textColumns.push(column);
+        break;
+
+      case "category":
+        analysis.categoryColumns.push(column);
+        break;
+
+      case "date":
+        analysis.dateColumns.push(column);
+        break;
+
+      case "boolean":
+        analysis.booleanColumns.push(column);
+        break;
+
+      default:
+        break;
     }
 
-    if (type === "date") {
-      analysis.dateColumns.push(column);
+    if (!analysis.detected[type]) {
+      analysis.detected[type] = [];
     }
 
-    if (type !== "unknown") {
-      analysis.detected[type] = column;
-    }
+    analysis.detected[type].push(column);
   });
 
   return analysis;
