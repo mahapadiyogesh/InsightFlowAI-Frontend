@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>InsightFlowAI – Raw data to dashboard</title>
+<style>
+:root{--bg:#f6f7fb;--card:#fff;--tx:#0f172a;--mu:#64748b;--bd:#e2e8f0;--ac:#4f46e5;--ac2:#06b6d4;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b1020;--card:#141a2e;--tx:#e8ecf8;--mu:#94a3b8;--bd:#263050;--ac:#818cf8;--ac2:#22d3ee;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b1020;--card:#141a2e;--tx:#e8ecf8;--mu:#94a3b8;--bd:#263050;--ac:#818cf8;--ac2:#22d3ee;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:radial-gradient(900px 400px at 10% -5%,color-mix(in srgb,var(--ac) 14%,transparent),transparent),radial-gradient(700px 400px at 100% 0,color-mix(in srgb,var(--ac2) 12%,transparent),transparent),var(--bg);background-attachment:fixed;color:var(--tx);font:15px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+.wrap{max-width:1180px;margin:auto;padding:20px;display:grid;gap:16px}
+header{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
+.brand{font-weight:800;font-size:20px}.brand i{font-style:normal;display:inline-grid;place-items:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,var(--ac),var(--ac2));color:#fff;margin-right:8px}
+.mu{color:var(--mu)}h1{font-size:clamp(26px,4vw,40px);line-height:1.15;margin:0 0 10px}h2{font-size:17px;margin:0 0 12px}h3{font-size:15px;margin:0 0 10px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:18px;padding:20px;min-width:0;box-shadow:0 1px 2px rgba(15,23,42,.04),0 8px 24px -12px rgba(79,70,229,.18);transition:transform .2s,box-shadow .2s;animation:up .5s both}.card:hover{transform:translateY(-2px);box-shadow:0 12px 32px -12px rgba(79,70,229,.35)}@keyframes up{from{opacity:0;transform:translateY(10px)}}
+.hero{background:radial-gradient(circle at 85% 0,rgba(6,182,212,.45),transparent 45%),linear-gradient(135deg,#312e81,#4f46e5 55%,#7c3aed);color:#fff;padding:36px;border:0}.hero .mu{color:rgba(255,255,255,.8)}.hero .b.g{color:#fff;border-color:rgba(255,255,255,.45)}.hero .dz{border-color:rgba(255,255,255,.6)}.hero .dz:hover,.hero .dz.on{background:rgba(255,255,255,.12)}
+.dz{display:grid;gap:4px;text-align:center;border:2px dashed var(--ac);border-radius:14px;padding:30px;margin:16px 0 12px;cursor:pointer}
+.dz:hover,.dz.on{background:color-mix(in srgb,var(--ac) 8%,transparent)}
+.b{background:linear-gradient(135deg,var(--ac),#7c3aed);color:#fff;border:0;border-radius:10px;padding:10px 16px;font:600 14px inherit;font-family:inherit;cursor:pointer}
+.b.g{background:transparent;color:var(--tx);border:1px solid var(--bd)}
+.grid{display:grid;gap:14px}.kp{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.ch{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.kpi{position:relative;overflow:hidden;color:#fff;border:0;background:linear-gradient(135deg,var(--g1),var(--g2))}.kpi::after{content:"";position:absolute;right:-30px;top:-30px;width:110px;height:110px;border-radius:50%;background:rgba(255,255,255,.16)}.kpi .mu{color:rgba(255,255,255,.85);font-size:13px}.kpi b{display:block;font-size:28px;margin-top:6px;letter-spacing:-.5px}.kpi .ic{position:absolute;right:14px;top:12px;font-size:26px;z-index:1}
+.cv{position:relative;height:260px}
+.chip{display:inline-block;background:color-mix(in srgb,#f59e0b 18%,transparent);border-radius:99px;padding:3px 11px;margin:0 6px 6px 0;font-size:13px}
+.fl{display:flex;flex-wrap:wrap;gap:14px;align-items:end}.fl label{display:grid;gap:4px;font-size:13px;color:var(--mu)}
+select{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:8px 10px;min-width:140px}
+.tw{overflow-x:auto;max-height:320px}table{border-collapse:collapse;width:100%;font-size:13px}
+th,td{text-align:left;padding:7px 10px;border-bottom:1px solid var(--bd);white-space:nowrap}th{position:sticky;top:0;background:var(--card);color:var(--mu);font-size:12px;text-transform:uppercase;letter-spacing:.05em}tbody tr:nth-child(even){background:color-mix(in srgb,var(--ac) 5%,transparent)}tbody tr:hover{background:color-mix(in srgb,var(--ac) 12%,transparent)}
+ol,ul{margin:0;padding-left:20px}li{margin:3px 0}
+.banner{background:linear-gradient(135deg,color-mix(in srgb,var(--ac) 14%,var(--card)),var(--card))}.banner h2{font-size:20px}.ig{grid-template-columns:repeat(auto-fit,minmax(260px,1fr))}.in{display:flex;gap:12px;align-items:flex-start;padding:14px;border-radius:14px;background:color-mix(in srgb,var(--ac) 7%,transparent);border:1px solid var(--bd)}.in span{font-size:24px}.in p{margin:0}.hidden{display:none!important}footer{text-align:center;font-size:13px;padding:10px}
+input[type=text],#q,#goal{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:8px;padding:9px 12px;width:100%;box-sizing:border-box;font:inherit}pre{background:color-mix(in srgb,var(--ac) 7%,transparent);padding:10px;border-radius:10px;overflow-x:auto;margin:6px 0;font-size:12.5px}details{margin-top:10px}
+@media print{.np{display:none!important}body{background:#fff;color:#000}.card{break-inside:avoid}}
+</style></head>
+<body><div class="wrap">
+<header class="np"><div class="brand"><i>◆</i> InsightFlowAI</div><span class="mu">Upload → Clean → Dashboard → Report</span></header>
+
+<section class="card hero np" id="hero">
+<h1>Raw data in. Clean dashboard and insights out.</h1>
+<p class="mu">An analyst-style workflow: profile the data, flag quality issues, clean with your approval, plan the KPIs and charts, then write insights from the actual numbers. Everything runs in your browser; your file never leaves your device.</p>
+<label class="dz" id="dz"><input id="f" type="file" accept=".xlsx,.xls,.csv" hidden><b>Drop an Excel or CSV file here</b><span class="mu">or click to browse</span></label>
+<button class="b g" id="demo">Try with sample sales data</button> <span id="msg" class="mu"></span>
+</section>
+
+<main id="app" class="wrap hidden" style="padding:0">
+<section class="card"><h2>Agent steps</h2><ol id="log"></ol></section>
+<section class="card np" id="cl"><h2>Data quality check</h2><div id="iss"></div>
+<p><button class="b" id="go">Clean &amp; build dashboard</button> <button class="b g" id="skip">Skip cleaning</button></p></section>
+
+<div id="dash" class="wrap hidden" style="padding:0">
+<section class="card banner"><h2 id="rt">Dashboard</h2><div class="fl np" id="flt"></div></section>
+<section class="grid kp" id="kp"></section>
+<section class="grid ch">
+<div class="card" id="w1"><h3 id="t1"></h3><div class="cv"><canvas id="c1"></canvas></div></div>
+<div class="card" id="w2"><h3 id="t2"></h3><div class="cv"><canvas id="c2"></canvas></div></div>
+<div class="card" id="w3"><h3 id="t3"></h3><div class="cv"><canvas id="c3"></canvas></div></div>
+</section>
+<section class="card"><h2>💡 Key insights from your data</h2><div class="grid ig" id="ins"></div></section>
+<section class="card"><h2>Data preview (first 50 rows)</h2><div class="tw" id="tb"></div></section>
+<section class="card np"><h2>🤖 Ask your data</h2><div class="fl"><label style="flex:1;min-width:240px">Your question (English / मराठी)<input id="q" placeholder="e.g. Which region has the lowest profit?"></label><button class="b" id="ask">Ask</button></div>
+<p><label><input type="checkbox" id="priv" checked> Privacy mode: send only column names and summary stats, never rows</label></p><div id="ans"></div></section>
+<section class="card np"><h2>🧮 DAX &amp; Excel formulas</h2><p class="mu">Measures an analyst would build for this dataset.</p><button class="b g" id="fx">Suggest formulas</button><div id="fxo"></div></section>
+<section class="card"><h2>📝 Executive summary</h2><div class="fl np"><label style="flex:1;min-width:240px">Audience / goal<input id="goal" placeholder="e.g. monthly review for my manager"></label><button class="b" id="sm">Write summary</button></div><div id="smo"></div></section>
+<p class="np"><button class="b" onclick="window.print()">Print / Save report as PDF</button></p>
+</div>
+</main>
+<footer class="mu">Built by Yogesh Mahapadi · Power BI · SQL · Excel · Data Analytics</footer>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),pal=["#6366f1","#06b6d4","#10b981","#f59e0b","#ef4444","#8b5cf6","#ec4899","#14b8a6"];
+const DOM=[["Sales / Retail",/sales|revenue|profit|order|product|customer/i],["HR / People",/employee|salary|department|attrition|hire/i],["Education",/student|marks|grade|course|attendance/i],["Finance",/amount|balance|expense|budget|invoice/i]];
+let raw=[],data=[],cols=[],F={},ch=[],ag=[],fname="",dm="",nu=[],ca=[],pm=null,dt=null;
+const blank=v=>v==null||String(v).trim()==="",
+num=v=>typeof v==="number"?v:blank(v)?NaN:Number(String(v).replace(/[,₹$€%\s]/g,"")),
+fmt=n=>Number(n).toLocaleString("en-IN",{maximumFractionDigits:2}),
+esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c])),
+mk=v=>{const d=v instanceof Date?v:new Date(v);return isNaN(d)?null:d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")},
+avg=a=>a.reduce((x,y)=>x+y,0)/(a.length||1);
+function prof(rows){return Object.keys(rows[0]).map(n=>{const vals=rows.map(r=>r[n]),f=vals.filter(v=>!blank(v)),u=new Set(f.map(String)),
+nn=f.filter(v=>!isNaN(num(v))).length,dd=f.filter(v=>v instanceof Date||(/date|day|month|time/i.test(n)&&mk(v))).length;
+let t="text";if(f.length&&nn/f.length>.9)t="number";else if(f.length&&dd/f.length>.8)t="date";else if(u.size<=20||u.size/f.length<.05)t="category";
+if(t==="number"&&/(^|[\W_])(id|no|number|code|sr)([\W_]|$)/i.test(n)&&u.size/f.length>.9)t="id";
+return{n,t,miss:vals.length-f.length,u:u.size,tx:t==="number"&&f.some(v=>typeof v==="string")}})}
+function dups(rows){const s=new Set();return rows.filter(r=>{const k=JSON.stringify(r);if(s.has(k))return false;s.add(k);return true})}
+function issues(){const p=prof(raw),d=raw.length-dups(raw).length,i=[];if(d)i.push(`${d} duplicate rows`);
+p.forEach(c=>{if(c.miss)i.push(`${c.miss} missing in “${c.n}”`);if(c.tx)i.push(`“${c.n}” has numbers stored as text`)});return i}
+function clean(){const L=[];let rows=raw.map(r=>{const o={};for(const k in r)o[k]=typeof r[k]==="string"?r[k].trim():r[k];return o});
+const b=rows.length;rows=dups(rows);if(b-rows.length)L.push(`Removed ${b-rows.length} duplicate rows`);
+prof(rows).forEach(c=>{if(c.t==="number"){const v=rows.map(r=>num(r[c.n])).filter(x=>!isNaN(x)).sort((a,b)=>a-b),med=v[v.length>>1];let fl=0;
+rows.forEach(r=>{const x=num(r[c.n]);if(isNaN(x)){r[c.n]=med;fl++}else r[c.n]=x});
+if(c.tx)L.push(`Converted “${c.n}” from text to numbers`);if(fl)L.push(`Filled ${fl} missing “${c.n}” values with the median (${fmt(med)})`)}
+else if(c.t!=="date"&&c.t!=="id"&&c.miss){rows.forEach(r=>{if(blank(r[c.n]))r[c.n]="Unknown"});L.push(`Marked ${c.miss} missing “${c.n}” values as “Unknown”`)}});
+return{rows,L}}
+const showLog=()=>$("#log").innerHTML=ag.map(x=>`<li>${esc(x)}</li>`).join("");
+function load(rows,name){if(!rows.length){$("#msg").textContent="That file has no data rows.";return}
+$("#msg").textContent="";raw=rows;fname=name;F={};const p=prof(raw),names=p.map(c=>c.n).join(" ");dm=(DOM.find(x=>x[1].test(names))||["General business data"])[0];
+const k=t=>p.filter(c=>c.t===t).length,i=issues();
+ag=[`Read ${name}: ${raw.length} rows × ${p.length} columns`,`Profiled columns: ${k("number")} numeric, ${k("category")} categorical, ${k("date")} date`,`Detected domain: ${dm}`,
+i.length?`Found ${i.length} data-quality issue(s); waiting for your approval to clean`:"No data-quality issues found"];
+$("#iss").innerHTML=i.length?i.map(x=>`<span class="chip">${esc(x)}</span>`).join(""):`<span class="mu">Nothing to fix.</span>`;
+$("#app").classList.remove("hidden");$("#cl").classList.remove("hidden");$("#dash").classList.add("hidden");showLog();$("#app").scrollIntoView({behavior:"smooth"})}
+function read(f){if(!f)return;const r=new FileReader();r.onload=e=>{try{const wb=XLSX.read(new Uint8Array(e.target.result),{type:"array",cellDates:true});
+load(XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]],{defval:""}),f.name)}catch(x){$("#msg").textContent="Could not read that file."}};r.readAsArrayBuffer(f)}
+$("#f").onchange=e=>read(e.target.files[0]);
+const dz=$("#dz");dz.ondragover=e=>{e.preventDefault();dz.classList.add("on")};dz.ondragleave=()=>dz.classList.remove("on");dz.ondrop=e=>{e.preventDefault();dz.classList.remove("on");read(e.dataTransfer.files[0])};
+$("#demo").onclick=()=>{let s=7;const R=()=>(s=(s*16807)%2147483647)/2147483647,pk=a=>a[R()*a.length|0],reg=["North","South","East","West"],cat=["Electronics","Furniture","Clothing","Grocery"],base={Electronics:900,Furniture:600,Clothing:250,Grocery:120},rows=[];
+for(let i=1;i<=240;i++){const c=pk(cat),m=1+(R()*10|0),q=1+(R()*5|0),sl=Math.round(base[c]*q*(.7+R()*.6)*(1+m*.03));
+rows.push({"Order ID":1000+i,Date:`2026-${String(m).padStart(2,"0")}-${String(1+(R()*27|0)).padStart(2,"0")}`,Region:pk(reg),Category:c,Sales:sl,Profit:Math.round(sl*(.08+R()*.17)),Quantity:q})}
+[15,27,40].forEach(i=>rows[i].Region="");[19,60].forEach(i=>rows[i].Sales="");[23,32,70].forEach(i=>rows[i].Sales=String(rows[i].Sales).replace(/\B(?=(\d{3})+$)/g,","));
+rows.slice(100,108).forEach(r=>rows.push({...r}));load(rows,"sample-sales.csv")};
+function build(sk){const c=sk?{rows:raw,L:["Cleaning skipped"]}:clean();data=c.rows;ag.push(...c.L);cols=prof(data);
+nu=cols.filter(x=>x.t==="number");ca=cols.filter(x=>x.t==="category");dt=cols.find(x=>x.t==="date")||null;
+pm=nu.find(x=>/sales|revenue|amount|total/i.test(x.n))||nu[0]||null;const fl=ca.filter(x=>x.u<=12).slice(0,3);
+ag.push(`Planned dashboard: primary measure “${pm?pm.n:"none"}”, ${fl.length} filter(s), charts chosen from column types`);showLog();
+$("#flt").innerHTML=fl.map(x=>`<label>${esc(x.n)}<select data-k="${esc(x.n)}"><option value="">All</option>${[...new Set(data.map(r=>String(r[x.n])))].sort().map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join("")}</select></label>`).join("")||`<span class="mu">No low-cardinality columns to filter.</span>`;
+document.querySelectorAll("#flt select").forEach(s=>s.onchange=()=>{F[s.dataset.k]=s.value;render()});
+$("#rt").textContent=`${fname} · ${data.length} rows · ${dm}`;$("#cl").classList.add("hidden");$("#dash").classList.remove("hidden");render();$("#dash").scrollIntoView({behavior:"smooth"})}
+$("#go").onclick=()=>build(false);$("#skip").onclick=()=>build(true);
+function render(){const d=data.filter(r=>Object.entries(F).every(([k,v])=>!v||String(r[k])===v)),sum=(m)=>d.reduce((a,r)=>a+(num(r[m])||0),0),K=[["Records",fmt(d.length)]];
+nu.slice(0,3).forEach(c=>K.push([`Total ${c.n}`,fmt(sum(c.n))]));if(pm&&d.length)K.push([`Average ${pm.n}`,fmt(sum(pm.n)/d.length)]);
+const G=[["#4f46e5","#7c3aed"],["#0891b2","#06b6d4"],["#059669","#10b981"],["#d97706","#f59e0b"],["#db2777","#f43f5e"]],IC=["🧾","💰","📈","📦","⭐"];
+$("#kp").innerHTML=K.map(([a,b],i)=>`<div class="card kpi" style="--g1:${G[i%5][0]};--g2:${G[i%5][1]};animation-delay:${i*70}ms"><span class="ic">${IC[i%5]}</span><span class="mu">${esc(a)}</span><b>${b}</b></div>`).join("");
+ch.forEach(c=>c.destroy());ch=[];[1,2,3].forEach(i=>$("#w"+i).classList.add("hidden"));
+const cs=getComputedStyle(document.documentElement);Chart.defaults.color=cs.getPropertyValue("--mu");Chart.defaults.borderColor=cs.getPropertyValue("--bd");
+const draw=(i,type,L,V,name)=>{$("#w"+i).classList.remove("hidden");$("#t"+i).textContent=name;ch.push(new Chart($("#c"+i),{type,data:{labels:L,datasets:[{label:pm.n,data:V,backgroundColor:type==="line"?pal[0]+"33":pal,borderColor:type==="doughnut"?cs.getPropertyValue("--card"):pal[0],borderWidth:type==="bar"?0:3,fill:type==="line",tension:.4,borderRadius:8,pointRadius:type==="line"?3:0,pointHoverRadius:6}]},options:{maintainAspectRatio:false,cutout:"68%",plugins:{legend:{display:type==="doughnut",position:"bottom"}},scales:type==="doughnut"?{}:{x:{grid:{display:false}},y:{border:{display:false}}}}}))},
+grp=k=>{const m={};d.forEach(r=>{const g=String(r[k]);m[g]=(m[g]||0)+(num(r[pm.n])||0)});return Object.entries(m).sort((a,b)=>b[1]-a[1])},ins=[];
+if(!d.length)ins.push("No rows match the current filters.");
+else if(!pm)ins.push("No numeric measure found, so only record counts and the data preview are available.");
+else{
+if(ca[0]){const g=grp(ca[0].n),t=g.reduce((a,x)=>a+x[1],0)||1,top=g.slice(0,10);draw(1,"bar",top.map(x=>x[0]),top.map(x=>x[1]),`${pm.n} by ${ca[0].n}`);
+ins.push(`“${g[0][0]}” leads ${ca[0].n} with ${(g[0][1]/t*100).toFixed(1)}% of total ${pm.n}; “${g.at(-1)[0]}” is lowest at ${(g.at(-1)[1]/t*100).toFixed(1)}%.`)}
+if(ca[1]){const g=grp(ca[1].n).slice(0,6);draw(2,"doughnut",g.map(x=>x[0]),g.map(x=>x[1]),`${pm.n} share by ${ca[1].n}`)}
+if(dt){const m={};d.forEach(r=>{const k=mk(r[dt.n]);if(k)m[k]=(m[k]||0)+(num(r[pm.n])||0)});const e=Object.entries(m).sort();
+if(e.length>1){draw(3,"line",e.map(x=>x[0]),e.map(x=>x[1]),`${pm.n} trend by month`);const f=e[0][1],l=e.at(-1)[1],pk=[...e].sort((a,b)=>b[1]-a[1])[0][0];
+ins.push(`${pm.n} peaked in ${pk}. The latest month (${e.at(-1)[0]}) is ${f?Math.abs((l-f)/f*100).toFixed(1)+"% "+(l>=f?"above":"below"):"compared with"} the first month (${e[0][0]}).`)}}
+const v=d.map(r=>num(r[pm.n])).filter(x=>!isNaN(x)).sort((a,b)=>a-b);
+if(v.length>8){const q1=v[v.length*.25|0],q3=v[v.length*.75|0],iq=q3-q1,o=v.filter(x=>x<q1-1.5*iq||x>q3+1.5*iq).length;if(o)ins.push(`${o} unusual values in ${pm.n} (outside 1.5 × IQR). Worth checking before you report them.`)}
+const n2=nu.find(c=>c!==pm);if(n2){const a=d.map(r=>num(r[pm.n])||0),b=d.map(r=>num(r[n2.n])||0),ma=avg(a),mb=avg(b);let s=0,x=0,y=0;a.forEach((_,i)=>{s+=(a[i]-ma)*(b[i]-mb);x+=(a[i]-ma)**2;y+=(b[i]-mb)**2});const r=s/Math.sqrt(x*y);
+if(isFinite(r))ins.push(`${pm.n} and ${n2.n} show a ${Math.abs(r)>.7?"strong":Math.abs(r)>.4?"moderate":"weak"} ${r>=0?"positive":"negative"} relationship (r = ${r.toFixed(2)}).`)}}
+const ico=x=>/leads/.test(x)?"🏆":/peaked/.test(x)?"📈":/unusual/.test(x)?"⚠️":/relationship/.test(x)?"🔗":"💡";
+$("#ins").innerHTML=ins.map(x=>`<div class="in"><span>${ico(x)}</span><p>${esc(x)}</p></div>`).join("");
+$("#tb").innerHTML=`<table><thead><tr>${cols.map(c=>`<th>${esc(c.n)}</th>`).join("")}</tr></thead><tbody>${d.slice(0,50).map(r=>`<tr>${cols.map(c=>`<td>${esc(r[c.n] instanceof Date?r[c.n].toISOString().slice(0,10):r[c.n])}</td>`).join("")}</tr>`).join("")}</tbody></table>`}
+
+/* ===== Agent layer: the LLM plans, the browser computes ===== */
+let aCh=null;
+async function call(action,payload){const go=async()=>{const r=await fetch("/api/agent",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({action,code:sessionStorage.getItem("code")||undefined,...payload})});return{r,j:await r.json()}};
+let {r,j}=await go();if(r.status===401){const c=prompt("Access code");if(c){sessionStorage.setItem("code",c);({r,j}=await go())}}
+if(!r.ok)throw new Error(j.error||"Request failed");return j}
+const stat=c=>{const v=data.map(r=>r[c.n]);if(c.t==="number"){const x=v.map(num).filter(a=>!isNaN(a));return{min:x.reduce((a,b)=>Math.min(a,b),Infinity),max:x.reduce((a,b)=>Math.max(a,b),-Infinity),avg:+avg(x).toFixed(2)}}
+if(c.t==="category")return{values:[...new Set(v.map(String))].slice(0,12)};return{}};
+const meta=()=>({dataset:fname,domain:dm,rows:data.length,columns:cols.map(c=>({name:c.n,type:c.t,unique:c.u,missing:c.miss,...stat(c)})),sample:$("#priv").checked?undefined:data.slice(0,5)});
+function run(s){const d=data.filter(r=>(s.filters||[]).every(f=>{const a=r[f.col],n=num(a),v=f.value,nv=num(v);switch(f.op){case"eq":return String(a)===String(v);case"neq":return String(a)!==String(v);case"gt":return n>nv;case"lt":return n<nv;case"gte":return n>=nv;case"lte":return n<=nv;case"contains":return String(a).toLowerCase().includes(String(v).toLowerCase())}return true}));
+const m=s.metric||{agg:"count"},val=rs=>{if(m.agg==="count"||!m.col)return rs.length;const x=rs.map(r=>num(r[m.col])).filter(a=>!isNaN(a));if(!x.length)return 0;return m.agg==="sum"?x.reduce((a,b)=>a+b,0):m.agg==="avg"?avg(x):m.agg==="min"?x.reduce((a,b)=>Math.min(a,b)):x.reduce((a,b)=>Math.max(a,b))};
+if(!s.groupBy)return[["Result",val(d)]];const isD=cols.find(c=>c.n===s.groupBy)?.t==="date",g={};
+d.forEach(r=>{const k=isD?mk(r[s.groupBy]):String(r[s.groupBy]);if(k)(g[k]=g[k]||[]).push(r)});
+let e=Object.entries(g).map(([k,rs])=>[k,val(rs)]);e=isD?e.sort():e.sort((a,b)=>s.sort==="asc"?a[1]-b[1]:b[1]-a[1]);return e.slice(0,Math.min(+s.limit||10,50))}
+const safe=(o,fn)=>async()=>{if(!data.length){o.innerHTML=`<p class="mu">Upload data and build the dashboard first.</p>`;return}o.innerHTML=`<p class="mu">Working…</p>`;
+try{await fn(o)}catch(e){o.innerHTML=`<p>⚠️ ${esc(e.message==="Failed to fetch"?"Agent API not reachable. Deploy on Vercel (or run npx vercel dev) first.":e.message)}</p>`}};
+$("#ask").onclick=safe($("#ans"),async o=>{const q=$("#q").value.trim();if(!q){o.innerHTML="";return}
+const {result:s}=await call("ask",{question:q,meta:meta()});
+if(s.clarify){o.innerHTML=`<div class="in"><span>❓</span><p>${esc(s.clarify)}</p></div>`;return}
+const names=cols.map(c=>c.n),bad=[s.groupBy,s.metric?.col,...(s.filters||[]).map(f=>f.col)].filter(x=>x&&!names.includes(x));
+if(bad.length){o.innerHTML=`<p>The agent used columns that don’t exist (${esc(bad.join(", "))}). Please rephrase.</p>`;return}
+const rows=run(s),vis=s.chart&&s.chart!=="none"&&s.groupBy;
+o.innerHTML=`<p><b>${esc(s.intro||"")}</b></p><div class="tw"><table><tbody>${rows.map(r=>`<tr><td>${esc(r[0])}</td><td>${fmt(r[1])}</td></tr>`).join("")}</tbody></table></div>${vis?`<div class="cv"><canvas id="ac"></canvas></div>`:""}<details><summary>How this was calculated</summary><pre>${esc(JSON.stringify(s,null,2))}</pre></details>`;
+if(aCh){aCh.destroy();aCh=null}
+if(vis)aCh=new Chart($("#ac"),{type:s.chart,data:{labels:rows.map(r=>r[0]),datasets:[{label:s.metric?.col||"count",data:rows.map(r=>r[1]),backgroundColor:pal,borderColor:pal[0],borderRadius:8,tension:.4}]},options:{maintainAspectRatio:false}})});
+$("#q").onkeydown=e=>{if(e.key==="Enter")$("#ask").click()};
+$("#fx").onclick=safe($("#fxo"),async o=>{const {result}=await call("formulas",{meta:meta()});
+o.innerHTML=result.map(f=>`<div class="in" style="display:block;margin-top:10px"><b>${esc(f.name)}</b><pre>DAX: ${esc(f.dax)}</pre><pre>Excel: ${esc(f.excel)}</pre><p class="mu">${esc(f.why)}</p></div>`).join("")});
+$("#sm").onclick=safe($("#smo"),async o=>{const {text}=await call("summary",{goal:$("#goal").value,meta:{dataset:fname,domain:dm,rows:data.length},facts:{kpis:$("#kp").innerText,insights:$("#ins").innerText}});
+o.innerHTML=`<p style="white-space:pre-wrap">${esc(text)}</p>`});
+</script></body></html>
